@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../base.css"/>
+</head>
+<body>
+    <div ng-controller="MyController">
+        {{ message }}
+    </div>
+    <div ng-controller="MyController2">
+        {{ message }}
+    </div>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script>
+        angular.module('myApp', []).controller('MyController', function ($scope, Person) {
+            Person = {
+                name: 'Ray Hengst',
+                sayHello: function () {
+                    console.log('Hello from ' + this.name);
+                    return 'Hello from ' + this.name;
+                }
+            };
+            $scope.message = Person.sayHello();
+        }).factory('Person', function () {
+            return {
+                name: 'Edwin Villanueva',
+                sayHello: function () {
+                    console.log('Hello from ' + this.name);
+                    return 'Hello from ' + this.name;
+                }
+            }
+        }).service('Person2', function () {
+            this.name = 'Ray hengst';
+            this.sayHello = function () {
+                return 'Hello from ' + this.name;
+            };
+        }).controller('MyController2', function ($scope, Person) {
+            $scope.message = Person.sayHello();
+             // todo: write a clear explanation with code
+             // todo: given a function with parameters set to dependencies, get angular to list the dependencies out
+        });
+    </script>
+</body>
+</html>

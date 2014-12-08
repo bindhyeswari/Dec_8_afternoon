@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+
+        // non lazy loading version
+
+        var di = {
+            service_registry: {
+
+            },
+            invoke: function () { // resolver
+                var args = Array.prototype.slice.call(arguments);
+                var fn = args.splice(0, 1)[0];
+                console.log(fn);
+                console.log(args);
+
+                var untrimmed = /\s?function\((.+)\)\s?\{/gmi.exec(fn.toString())[1].split(',');
+                var trimmed = untrimmed.map(function (elem) {
+                    return elem.trim();
+                });
+
+                var finalargs = [];
+                for (var i = 0, len = trimmed.length; i < len; i++) {
+                    var param = trimmed[i];
+                    if ( param in this.service_registry ) {
+                        finalargs.push(this.service_registry[param]);
+                    } else {
+                        finalargs.push(arguments[i]);
+                    }
+                }
+
+                console.log(finalargs);
+
+                fn.apply(window, finalargs);
+
+            },
+            init: function () {
+                // register all dependencies
+                for (var prop in window) {
+                    if ( typeof (window[prop]) === 'function' ) {
+                        if ( /^[a-zA-Z]+Factory$/.test(prop) ) {
+                            var factory = window[prop];
+                            var service = factory();
+                            this.service_registry[service.name] = service.def;
+                        }
+                    }
+                }
+            }
+        };
+
+        function PersonFactory() {
+            // set up a service called Person
+            return {
+                name: 'Person',
+                def: {
+                    name: 'Ray Hengst'
+                }
+            }
+        }
+
+
+        function RaysControllerFunction(Person, message) {
+            console.log(message + Person.name);
+        }
+
+        di.init();
+        console.log(di.service_registry);
+        di.invoke(RaysControllerFunction, 'Hello from ');
+
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
